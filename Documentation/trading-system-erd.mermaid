@@ -1,0 +1,48 @@
+erDiagram
+    USER ||--o{ ACCOUNT : "owns many"
+    USER ||--o{ PORTFOLIO : "has many"
+    ACCOUNT ||--|{ TRADE : "contains many trades"
+    
+    USER ||--o{ TRADE : "as Broker"
+    USER ||--o{ TRADE : "as Client"
+
+    ASSET ||--o{ PORTFOLIO : "listed in many"
+    ASSET ||--o{ TRADE : "traded in many"
+
+    USER {
+        Long id PK
+        String username
+        String password
+        String role
+    }
+
+    ACCOUNT {
+        Long id PK
+        Long user_id FK
+        BigDecimal balance
+        Date created_on
+    }
+
+    PORTFOLIO {
+        Long id PK
+        Long user_id FK
+        Long asset_id FK
+        BigDecimal quantity
+    }
+
+    TRADE {
+        Long id PK
+        Long account_id FK
+        Long broker_id FK
+        Long client_id FK
+        Long asset_id FK
+        BigDecimal quantity
+        BigDecimal price
+        Date trade_date
+    }
+
+    ASSET {
+        Long id PK
+        String ticker
+        String name
+    }
