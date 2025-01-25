@@ -1,0 +1,7 @@
+2025-01-16 22:12:15.571530+06:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table if not exists speaker ( id identity not null [*]int primary key, name varchar(100) not null )"; expected "DEFAULT ON NULL, SEQUENCE, SELECTIVITY, COMMENT, CONSTRAINT, COMMENT, PRIMARY KEY, UNIQUE, NOT NULL, CHECK, REFERENCES, ,, )"; SQL statement:
+create table if not exists speaker ( id identity not null int primary key, name varchar(100) not null ) [42001-232]
+2025-01-17 22:19:06.127973+06:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * FROM SPEAKER SPEAKER \000d\000a[*]DELETE FROM SPEAKER SPEAKER"; SQL statement:
+SELECT * FROM SPEAKER SPEAKER 
+DELETE FROM SPEAKER SPEAKER [42000-232]

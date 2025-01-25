@@ -1,0 +1,1 @@
+insert into speaker (name) values ('Sazidur Rahman Mahin');
