@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+    <context:annotation-config/>
+    <bean id="address" class="org.Learnathon.SetterInjection.Address">
+        <property name="street" value="1234 Main St"/>
+        <property name="city" value="New York"/>
+        <property name="state" value="NY"/>
+        <property name="country" value="USA"/>
+    </bean>
+    <bean id="employee" class="org.Learnathon.SetterInjection.Employee">
+        <property name="id" value="1001"/>
+        <property name="name" value="Sazid"/>
+        <property name="address" ref="address"/>
+    </bean>
+    <bean name="answer1" class="org.Learnathon.SetterInjection.Answer">
+        <property name="id">
+            <value>1</value>
+        </property>
+        <property name="name">
+            <value>Java is a programming language</value>
+        </property>
+        <property name="by">
+            <value>Rahul</value>
+        </property>
+    </bean>
+    <bean name="answer2" class="org.Learnathon.SetterInjection.Answer">
+        <property name="id">
+            <value>2</value>
+        </property>
+        <property name="name">
+            <value>Java is a platform</value>
+        </property>
+        <property name="by">
+            <value>Rahul</value>
+        </property>
+    </bean>
+    <bean id="question" class="org.Learnathon.SetterInjection.Question">
+        <property name="id">
+            <value>1</value>
+        </property>
+        <property name="name">
+            <value>Java</value>
+        </property>
+        <property name="answers" >
+            <map>
+                <entry key="Cool Java" value="Sonoo Jaiswal"/>
+                <entry key="Java Cool " value="Sachin Yadav"/>
+            </map>
+        </property>
+<!--        <property name="answers">-->
+<!--            <list>-->
+<!--               <ref bean="answer1" />-->
+<!--                <ref bean="answer2" />-->
+<!--            </list>-->
+<!--        </property>-->
+    </bean>
+    <bean name="person" class="org.Learnathon.ConstructorInjection.Person">
+        <constructor-arg value="Sazid"/>
+        <constructor-arg value="25"/>
+    </bean>
+    <bean name="cake" class="org.Learnathon.BeanLifecycle.Cake" init-method="init" destroy-method="destroy">
+        <property name="price" value="500"/>
+    </bean>
+    <bean name="coke" class="org.Learnathon.BeanLifecycle.Coke">
+        <property name="price" value="50"/>
+    </bean>
+    <bean name="file" class="org.Learnathon.BeanLifecycle.File">
+        <property name="name" value="file"/>
+        <property name="size" value="10.33"/>
+    </bean>
+</beans>
