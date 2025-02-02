@@ -1,0 +1,2 @@
+I am learning through building project. This is the project github repo I am building to learn the Spring boot. Github Link: https://github.com/shahalam22/trading.
+1. I have done authentication part (register and login) of this project
