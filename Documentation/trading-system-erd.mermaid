@@ -1,48 +1,284 @@
 erDiagram
-    USER ||--o{ ACCOUNT : "owns many"
-    USER ||--o{ PORTFOLIO : "has many"
-    ACCOUNT ||--|{ TRADE : "contains many trades"
-    
-    USER ||--o{ TRADE : "as Broker"
-    USER ||--o{ TRADE : "as Client"
 
-    ASSET ||--o{ PORTFOLIO : "listed in many"
-    ASSET ||--o{ TRADE : "traded in many"
+%% -------------------------------------------------
+%% StockFlowAI ER Diagram (Mermaid)
+%% Incorporates recommended changes for unified user/client handling,
+%% Role-Based Access Control, and other relationships
+%% -------------------------------------------------
 
-    USER {
-        Long id PK
-        String username
-        String password
-        String role
-    }
+%% -------------------------------------------------
+%% 1) USER & ROLE-BASED ACCESS CONTROL
+%% -------------------------------------------------
+User {
+    int user_id PK
+    int role_id FK
+    string name
+    string email UK
+    string password_hash
+    datetime created_at
+    datetime last_login
+    boolean is_active
+}
 
-    ACCOUNT {
-        Long id PK
-        Long user_id FK
-        BigDecimal balance
-        Date created_on
-    }
+Role {
+    int role_id PK
+    string name UK
+    string description
+}
 
-    PORTFOLIO {
-        Long id PK
-        Long user_id FK
-        Long asset_id FK
-        BigDecimal quantity
-    }
+Permission {
+    int permission_id PK
+    string name UK
+    string description
+}
 
-    TRADE {
-        Long id PK
-        Long account_id FK
-        Long broker_id FK
-        Long client_id FK
-        Long asset_id FK
-        BigDecimal quantity
-        BigDecimal price
-        Date trade_date
-    }
+RolePermission {
+    int role_id FK
+    int permission_id FK
+}
 
-    ASSET {
-        Long id PK
-        String ticker
-        String name
-    }
+%% -------------------------------------------------
+%% 2) CLIENT PROFILE (Extension of User for Clients)
+%% -------------------------------------------------
+ClientProfile {
+    int client_profile_id PK
+    int user_id FK
+    int broker_id FK
+    string phone
+    string boid UK
+    string trading_account_no UK
+    datetime created_at
+    boolean is_active
+}
+
+%% -------------------------------------------------
+%% 3) BANK ACCOUNT
+%% -------------------------------------------------
+BankAccount {
+    int account_id PK
+    int client_profile_id FK
+    string bank_name
+    string branch_name
+    string account_no
+    string routing_no
+    boolean is_primary
+}
+
+%% -------------------------------------------------
+%% 4) PORTFOLIO & STOCK HOLDINGS
+%% -------------------------------------------------
+Portfolio {
+    int portfolio_id PK
+    int client_profile_id FK
+    decimal total_investment
+    decimal current_value
+    decimal profit_loss
+    decimal available_balance
+    decimal ledger_balance
+    datetime last_updated
+}
+
+StockHolding {
+    int holding_id PK
+    int portfolio_id FK
+    string ticker FK
+    int quantity
+    decimal avg_buy_price
+    decimal current_price
+    decimal profit_loss
+    datetime last_updated
+}
+
+%% -------------------------------------------------
+%% 5) TRANSACTIONS & NOTIFICATIONS
+%% -------------------------------------------------
+Transaction {
+    int transaction_id PK
+    int client_profile_id FK
+    string type
+    string ticker
+    int quantity
+    decimal price
+    decimal total_amount
+    decimal commission
+    datetime transaction_date
+    string status
+}
+
+Notification {
+    int notification_id PK
+    int user_id FK
+    int transaction_id FK
+    string title
+    string message
+    boolean is_read
+    datetime created_at
+}
+
+%% -------------------------------------------------
+%% 6) MONEY DEPOSITS & WITHDRAWALS
+%% -------------------------------------------------
+MoneyDeposit {
+    int deposit_id PK
+    int client_profile_id FK
+    decimal amount
+    string cheque_no
+    datetime cheque_date
+    string bank_name
+    string narration
+    string document_path
+    string status
+    datetime created_at
+    datetime processed_at
+}
+
+MoneyWithdrawal {
+    int withdrawal_id PK
+    int client_profile_id FK
+    decimal amount
+    string narration
+    string status
+    string collection_method
+    datetime created_at
+    datetime processed_at
+}
+
+%% -------------------------------------------------
+%% 7) IPO REQUEST
+%% -------------------------------------------------
+IPORequest {
+    int ipo_request_id PK
+    int client_profile_id FK
+    string company_name
+    string category
+    decimal amount
+    string status
+    datetime created_at
+    datetime processed_at
+}
+
+%% -------------------------------------------------
+%% 8) MARKET DATA & SECTOR PERFORMANCE
+%% -------------------------------------------------
+StockMarketData {
+    int data_id PK
+    string ticker UK
+    string company_name
+    string sector
+    decimal current_price
+    decimal previous_close
+    decimal day_high
+    decimal day_low
+    decimal pe_ratio
+    decimal market_cap
+    decimal volume
+    datetime last_updated
+}
+
+SectorPerformance {
+    int sector_id PK
+    string name UK
+    decimal current_value
+    decimal percent_change
+    decimal yearly_change
+    datetime last_updated
+}
+
+%% -------------------------------------------------
+%% 9) RISK, KYC, AML
+%% -------------------------------------------------
+RiskProfile {
+    int profile_id PK
+    int client_profile_id FK
+    string risk_level
+    string investment_goals
+    int time_horizon
+    decimal max_drawdown
+    datetime last_updated
+}
+
+KYCDocument {
+    int document_id PK
+    int client_profile_id FK
+    string document_type
+    string document_path
+    string status
+    datetime uploaded_at
+    datetime verified_at
+}
+
+AMLAlert {
+    int alert_id PK
+    int client_profile_id FK
+    string alert_type
+    string description
+    string severity
+    boolean is_resolved
+    datetime created_at
+    datetime resolved_at
+}
+
+%% -------------------------------------------------
+%% 10) CHATBOT MESSAGES & REPORTS
+%% -------------------------------------------------
+ChatbotMessage {
+    int message_id PK
+    int user_id FK
+    string message
+    string response
+    datetime created_at
+}
+
+Report {
+    int report_id PK
+    int client_profile_id FK
+    string report_type
+    string file_path
+    datetime generated_at
+}
+
+%% -------------------------------------------------
+%% RELATIONSHIPS
+%% -------------------------------------------------
+
+%% --- USER to ROLE, PERMISSIONS ---
+User }o--|| Role : "belongs to"
+Role }|--o{ RolePermission : "has"
+Permission }o--|| RolePermission : "included in"
+
+%% --- USER owns ClientProfile (1:1 or 1:many) ---
+User ||--o{ ClientProfile : "extended client data"
+%% The broker of a ClientProfile is also a User
+ClientProfile }o--|| User : "broker manages"
+
+%% --- BANK ACCOUNT ---
+ClientProfile ||--o{ BankAccount : "has"
+
+%% --- PORTFOLIO & HOLDINGS ---
+ClientProfile ||--o{ Portfolio : "has"
+Portfolio ||--o{ StockHolding : "contains"
+
+%% Link from StockHolding to StockMarketData based on ticker
+StockHolding }o--|| StockMarketData : "references"
+
+%% --- TRANSACTION & NOTIFICATION ---
+ClientProfile ||--o{ Transaction : "performs"
+User ||--o{ Notification : "receives"
+Notification }o--|| Transaction : "about"
+
+%% --- DEPOSITS, WITHDRAWALS, IPOS ---
+ClientProfile ||--o{ MoneyDeposit : "requests deposit"
+ClientProfile ||--o{ MoneyWithdrawal : "requests withdrawal"
+ClientProfile ||--o{ IPORequest : "submits"
+
+%% --- SECTOR PERFORMANCE ---
+StockMarketData }o--|| SectorPerformance : "sector info"
+
+%% --- RISK, KYC, AML ---
+ClientProfile ||--|| RiskProfile : "has"
+ClientProfile ||--o{ KYCDocument : "uploads"
+ClientProfile ||--o{ AMLAlert : "triggers"
+
+%% --- CHATBOT & REPORTS ---
+User ||--o{ ChatbotMessage : "sends"
+ClientProfile ||--o{ Report : "generates"
